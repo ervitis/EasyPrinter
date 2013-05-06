@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MainActivity</string>
+    <string name="app_name">Easy Print</string>
+		<string name="txt_print_document">Imprimir</string>
+		<string name="txt_exit">Salir</string>
+		<string name="txt_settings">Preferencias</string>
+		<string name="txt_file_to_print">Cargar fichero</string>
 </resources>

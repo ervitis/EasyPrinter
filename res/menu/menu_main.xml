@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:id="@+id/print" android:title="@string/txt_print_document"/>
+  <item android:id="@+id/exit" android:title="@string/txt_exit"/>
+	<item android:id="@+id/settings" android:title="@string/txt_settings"/>
+</menu>
