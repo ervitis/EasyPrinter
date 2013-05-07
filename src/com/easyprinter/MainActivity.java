@@ -6,9 +6,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 public class MainActivity extends Activity
 {
+	private static final int REQUEST_MENU_CODE = 1;
+	private static final int REQUEST_SEARCH_FILE = 2;
+	
   /**
    * Called when the activity is created
    * @param savedInstanceState contains the activity's previously frozen state
@@ -65,6 +69,7 @@ public class MainActivity extends Activity
   @Override
   protected void onDestroy(){
 		super.onDestroy();
+		finish();
   }
 	
 	/**
@@ -88,7 +93,25 @@ public class MainActivity extends Activity
 	 *										<code>false</code> to perform the normal menu handling
 	 */
 	@Override
-	public boolean onMenuItemSelected(int featuredId, MenuItem item){
+	public boolean onMenuItemSelected(int featuredId, MenuItem item){		
+		//dispatch
+		//exit
+		if ( item.getItemId() == R.id.exit ){
+			onDestroy();
+		}
+		//help
+		else if ( item.getItemId() == R.id.help ){
+			//dialog
+		}
+		//print
+		else if ( item.getItemId() == R.id.print ){
+			//send the document and progress dialog
+		}
+		//settings
+		else{
+			Intent i = new Intent(this, Settings.class);
+			startActivityForResult(i, REQUEST_MENU_CODE);
+		}
 		return super.onOptionsItemSelected(item);
 	}
 	
@@ -100,6 +123,23 @@ public class MainActivity extends Activity
 	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-		
+		if ( requestCode == REQUEST_MENU_CODE ){
+			//code settings
+			if ( resultCode == RESULT_OK ){
+				
+			}
+		}
+		else if ( requestCode == REQUEST_SEARCH_FILE ){
+			
+		}
+	}
+	
+	/**
+	 * 
+	 * @param view 
+	 */
+	public void onShowSearch(View view){
+		Intent i = new Intent(this, SearchFile.class);
+		startActivityForResult(i, REQUEST_SEARCH_FILE);
 	}
 }

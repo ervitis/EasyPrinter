@@ -14,7 +14,7 @@
 		android:textSize="20sp"
 		android:gravity="center_horizontal"
 		android:clickable="true"
-		android:onClick="onShowSearchDialog"/>
+		android:onClick="onShowSearch"/>
 	
 </LinearLayout>
 
