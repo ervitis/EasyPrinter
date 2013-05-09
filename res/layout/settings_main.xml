@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  >
+	
+	<TextView
+		android:text="Introduzca la dirección IP"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="15dp"
+		android:textSize="16sp"
+		android:gravity="center_horizontal"/>
+	
+	<EditText
+		android:id="@+id/text_ip_address"
+		android:inputType="number"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="5dp"/>
+	
+	<TextView
+		android:id="@+id/text_result_settings"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dp"
+		android:layout_marginTop="5dp"/>
+	
+	<LinearLayout
+		android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:gravity="center_horizontal"
+		android:layout_weight="0">
+		
+		<Button
+			android:id="@+id/cancel_settings"
+			android:text="Cancelar"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:onClick="onCancelSettings"/>
+		
+		<Button
+			android:id="@+id/search_settings"
+			android:text="Buscar"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="onSearchPrinter"/>
+		
+	</LinearLayout>
+
+</LinearLayout>

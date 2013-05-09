@@ -8,4 +8,6 @@
 		<string name="txt_menu_help">Ayuda</string>
 		<string name="app_search">Buscar fichero</string>
 		<string name="cancel_search">Cancelar</string>
+		<string name="txt_help_dialog">Cargue un nuevo fichero y mándelo imprimir desde el menú</string>
+		<string name="app_settings">Busque impresora</string>
 </resources>

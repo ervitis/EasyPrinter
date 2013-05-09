@@ -2,6 +2,7 @@
 package com.easyprinter;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,16 +29,31 @@ public class SearchFile extends Activity {
 		super.onCreate(icicle);
 		setContentView(R.layout.search_main);
 		
-		//int[] to = new int[] {R.id.txt_list};
-		
 		listView = (ListView) findViewById(R.id.list_files);
 		filelistadapter = new FileListAdapter();
+		
+		final ProgressDialog progressdialog = ProgressDialog.show(this, "Cargando", "Espere un momento...", true);
+		new Thread(new Runnable(){
+			@Override
+			public void run(){
+				try{
+					Thread.sleep(3000);
+					progressdialog.dismiss();
+				}catch(InterruptedException ex){
+					Log.e("Thread", ex.getMessage());
+				}
+			}
+		}).start();
+		
 		Search();
-		//filelistadapter.add(new FileList("/mnt/prueba", "prueba.txt"));
 		
 		listView.setAdapter(filelistadapter);		
 		
 		listView.setOnItemClickListener(new OnItemClickListener(){
+			
+			/**
+			 * Set a listener on an item override the method from the interface OnItemClickListener
+			 */
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id){
 				TextView tx = (TextView)view.findViewById(R.id.txt_list_absolute_path);
@@ -51,12 +67,19 @@ public class SearchFile extends Activity {
 		});
 	}
 	
+	/**
+	 * onDestroy method
+	 */
 	@Override
 	protected void onDestroy(){
 		super.onDestroy();
 		finish();
 	}
 	
+	/**
+	 * Search files in the sdcard
+	 * Note: future versions set parameter for a custom search in a directory
+	 */
 	public void Search(){
 		try{
 			File f = new File("/mnt/sdcard");
@@ -75,5 +98,13 @@ public class SearchFile extends Activity {
 		}catch(Exception ex){
 			Log.e("SearchFile", ex.getMessage());
 		}
+	}
+	
+	/**
+	 * Cancel de search and return to the previous activity
+	 * @param view		the view of the button
+	 */
+	public void onCancelSearch(View view){
+		onDestroy();
 	}
 }

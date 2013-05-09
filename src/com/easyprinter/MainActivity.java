@@ -1,6 +1,7 @@
 package com.easyprinter;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ public class MainActivity extends Activity
 {
 	private static final int REQUEST_MENU_CODE = 1;
 	private static final int REQUEST_SEARCH_FILE = 2;
+	private static boolean bGetPrinter = false;
 	
   /**
    * Called when the activity is created
@@ -26,9 +28,12 @@ public class MainActivity extends Activity
 		
 		//create some dumb files
 		/*
-		File f = new File("/mnt/sdcard/prueba.txt");
+		File f = new File("/mnt/sdcard/prueba/");
 		try{
-			f.createNewFile();
+			if ( f.mkdir() ){
+				f = new File("/mnt/sdcard/prueba/prueba3.txt");
+				f.createNewFile();
+			}
 		}catch(Exception ex){
 			Log.e("MainActivity", ex.getMessage());
 		}
@@ -114,6 +119,7 @@ public class MainActivity extends Activity
 		//help
 		else if ( item.getItemId() == R.id.help ){
 			//dialog
+			helpDialog();
 		}
 		//print
 		else if ( item.getItemId() == R.id.print ){
@@ -121,7 +127,7 @@ public class MainActivity extends Activity
 		}
 		//settings
 		else{
-			Intent i = new Intent(this, Settings.class);
+			Intent i = new Intent(this, SearchPrinter.class);
 			startActivityForResult(i, REQUEST_MENU_CODE);
 		}
 		return super.onOptionsItemSelected(item);
@@ -138,7 +144,7 @@ public class MainActivity extends Activity
 		if ( requestCode == REQUEST_MENU_CODE ){
 			//code settings
 			if ( resultCode == RESULT_OK ){
-				
+				bGetPrinter = true;
 			}
 		}
 		else if ( requestCode == REQUEST_SEARCH_FILE ){
@@ -152,11 +158,21 @@ public class MainActivity extends Activity
 	}
 	
 	/**
-	 * 
-	 * @param view 
+	 * Show the new activity for search the file to print
+	 * @param view		the View
 	 */
 	public void onShowSearch(View view){
 		Intent i = new Intent(this, SearchFile.class);
 		startActivityForResult(i, REQUEST_SEARCH_FILE);
+	}
+	
+	/**
+	 * Create the dialog help
+	 */
+	public void helpDialog(){
+		Dialog d = new Dialog(MainActivity.this);
+		d.setTitle("Ayuda");
+		d.setContentView(R.layout.help_dialog);
+		d.show();
 	}
 }
