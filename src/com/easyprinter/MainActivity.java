@@ -3,6 +3,7 @@ package com.easyprinter;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +22,17 @@ public class MainActivity extends Activity
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
+		
+		
+		//create some dumb files
+		/*
+		File f = new File("/mnt/sdcard/prueba.txt");
+		try{
+			f.createNewFile();
+		}catch(Exception ex){
+			Log.e("MainActivity", ex.getMessage());
+		}
+		*/
   }
   
   /**
@@ -130,7 +142,12 @@ public class MainActivity extends Activity
 			}
 		}
 		else if ( requestCode == REQUEST_SEARCH_FILE ){
-			
+			if ( resultCode == RESULT_OK ){
+				//enable print menu
+				//show the file name
+				String s = data.getStringExtra("fichero");
+				Log.d("MainActivity", s);
+			}
 		}
 	}
 	

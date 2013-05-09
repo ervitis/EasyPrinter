@@ -7,4 +7,5 @@
 		<string name="txt_file_to_print">Cargar fichero</string>
 		<string name="txt_menu_help">Ayuda</string>
 		<string name="app_search">Buscar fichero</string>
+		<string name="cancel_search">Cancelar</string>
 </resources>
