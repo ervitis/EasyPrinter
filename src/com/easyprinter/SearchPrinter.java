@@ -2,14 +2,13 @@
 package com.easyprinter;
 
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import java.net.Socket;
 
 public class SearchPrinter extends Activity {
-	private static int TCP = 7770;
 
 	/**
 	 * Called when the activity is first created.
@@ -42,22 +41,41 @@ public class SearchPrinter extends Activity {
 	 * @param view		the view
 	 */
 	public void onSearchPrinter(View view){
-		//socket to server for searching shared printers
-		final String message = "SEARCHING";		//the message to initialize
-		final TextView tx = (TextView) findViewById(R.id.text_ip_address);
+		String message = "SEARCHING";		//the message to initialize
+		TextView tx = (TextView) findViewById(R.id.text_ip_address);
 		try{
-			final Socket s = new Socket(tx.getText().toString(), TCP);
-			
-			new Thread(new Runnable(){
-				@Override
-				public void run() {
-					
-				}
-				
-			}).start();
-			
+			String ip = tx.getText().toString();
+			Task t = new Task();
+			t.execute(message, ip);	
+			/*
+			message = "FIN";
+			t.execute(message, ip);
+			* */
 		}catch(Exception ex){
-			Log.e("Socket", ex.getMessage());
+			Log.e("onSearchPrinter", ex.getMessage());
+		}
+	}
+	
+	//AsyncTask
+	protected class Task extends AsyncTask<String, Integer, String>{
+
+		@Override
+		protected String doInBackground(String... params) {
+			Comm c = new Comm();
+			Log.d("AsyncTask", "Param0->" + params[0] + "; Param1->" + params[1]);
+			return c.sendMessage(params[0], params[1]);
+		}
+		
+		@Override
+		protected void onPostExecute(String result){
+			super.onPostExecute(result);
+			Log.i("AsyncTask", result);
+		}		
+		
+		@Override
+		protected void onCancelled(){
+			super.onCancelled();
+			Log.i("AsyncTask", "Cancelled");
 		}
 	}
 }
