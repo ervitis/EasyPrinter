@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends Activity
 {
@@ -145,6 +146,8 @@ public class MainActivity extends Activity
 			//code settings
 			if ( resultCode == RESULT_OK ){
 				bGetPrinter = true;
+				String s = data.getStringExtra("printer");
+				Log.d("MainActivity", s);
 			}
 		}
 		else if ( requestCode == REQUEST_SEARCH_FILE ){
@@ -152,6 +155,8 @@ public class MainActivity extends Activity
 				//enable print menu
 				//show the file name
 				String s = data.getStringExtra("fichero");
+				TextView tx1 = (TextView)findViewById(R.id.file_name);
+				tx1.setText(s);
 				Log.d("MainActivity", s);
 			}
 		}

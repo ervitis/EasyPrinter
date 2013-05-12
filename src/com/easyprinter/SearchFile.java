@@ -15,6 +15,10 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.FilenameFilter;
 
+/**
+ *
+ * @author victor
+ */
 public class SearchFile extends Activity {
 	FileListAdapter filelistadapter;
 	
@@ -47,6 +51,7 @@ public class SearchFile extends Activity {
 		
 		Search();
 		
+		if ( filelistadapter == null ) Log.e("Search file", "error");
 		listView.setAdapter(filelistadapter);		
 		
 		listView.setOnItemClickListener(new OnItemClickListener(){

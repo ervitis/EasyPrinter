@@ -2,14 +2,16 @@
 package com.easyprinter;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SearchPrinter extends Activity {
-
+	final String result = "";
 	/**
 	 * Called when the activity is first created.
 	 */
@@ -47,17 +49,16 @@ public class SearchPrinter extends Activity {
 			String ip = tx.getText().toString();
 			Task t = new Task();
 			t.execute(message, ip);	
-			/*
+			
 			message = "FIN";
 			t.execute(message, ip);
-			* */
 		}catch(Exception ex){
 			Log.e("onSearchPrinter", ex.getMessage());
 		}
 	}
 	
 	//AsyncTask
-	protected class Task extends AsyncTask<String, Integer, String>{
+	class Task extends AsyncTask<String, String, String>{
 
 		@Override
 		protected String doInBackground(String... params) {
@@ -69,7 +70,13 @@ public class SearchPrinter extends Activity {
 		@Override
 		protected void onPostExecute(String result){
 			super.onPostExecute(result);
+			Toast.makeText(SearchPrinter.this, result, Toast.LENGTH_SHORT).show();
+			
 			Log.i("AsyncTask", result);
+			Intent data = new Intent();
+			data.putExtra("printer", result);
+			setResult(Activity.RESULT_OK, data);
+			finish();
 		}		
 		
 		@Override
