@@ -32,20 +32,6 @@ public class MainActivity extends Activity
   protected void onCreate(Bundle savedInstanceState){
     super.onCreate(savedInstanceState);
     setContentView(R.layout.main);
-		
-		
-		//create some dumb files
-		/*
-		File f = new File("/mnt/sdcard/prueba/");
-		try{
-			if ( f.mkdir() ){
-				f = new File("/mnt/sdcard/prueba/prueba3.txt");
-				f.createNewFile();
-			}
-		}catch(Exception ex){
-			Log.e("MainActivity", ex.getMessage());
-		}
-		*/
   }
   
   /**
