@@ -3,6 +3,7 @@ package com.easyprinter;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,12 +11,18 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
+import java.io.File;
 
 public class MainActivity extends Activity
 {
 	private static final int REQUEST_MENU_CODE = 1;
 	private static final int REQUEST_SEARCH_FILE = 2;
 	private static boolean bGetPrinter = false;
+	private static boolean bGetFile = false;
+	private String myPrinter = "";
+	private String myFile = "";
+	private String myIp = "";
 	
   /**
    * Called when the activity is created
@@ -100,6 +107,7 @@ public class MainActivity extends Activity
 		super.onCreateOptionsMenu(menu);
 		MenuInflater mInf = getMenuInflater();
 		mInf.inflate(R.menu.menu_main, menu);
+	
 		return true;
 	}
 	
@@ -125,6 +133,24 @@ public class MainActivity extends Activity
 		//print
 		else if ( item.getItemId() == R.id.print ){
 			//send the document and progress dialog
+			if ( bGetFile ){
+				if ( bGetPrinter ){
+					//I have a printer selected
+					Log.i("MainActivity", myPrinter + " is selected");
+					Log.i("MainActivity", myFile + " is selected");
+					Log.i("MainActivity", myIp + " from");
+					//get ip
+					
+					Task t = new Task();
+					t.execute(myFile, myIp);
+				}
+				else{
+					Toast.makeText(this, "Debe seleccionar una impresora en el menú Preferencias", Toast.LENGTH_SHORT).show();
+				}
+			}
+			else{
+				Toast.makeText(this, "Debe seleccionar un fichero a imprimir", Toast.LENGTH_SHORT).show();
+			}
 		}
 		//settings
 		else{
@@ -146,18 +172,22 @@ public class MainActivity extends Activity
 			//code settings
 			if ( resultCode == RESULT_OK ){
 				bGetPrinter = true;
-				String s = data.getStringExtra("printer");
-				Log.d("MainActivity", s);
+				String temp = data.getStringExtra("printerandip");
+				String[] m = temp.split(";");
+				myPrinter = m[0];
+				myIp = m[1];
+				Log.d("MainActivity", myPrinter + ";" + myIp);
 			}
 		}
 		else if ( requestCode == REQUEST_SEARCH_FILE ){
 			if ( resultCode == RESULT_OK ){
 				//enable print menu
 				//show the file name
-				String s = data.getStringExtra("fichero");
+				myFile = data.getStringExtra("fichero");
+				bGetFile = true;
 				TextView tx1 = (TextView)findViewById(R.id.file_name);
-				tx1.setText(s);
-				Log.d("MainActivity", s);
+				tx1.setText(myFile);
+				Log.d("MainActivity", myFile);
 			}
 		}
 	}
@@ -180,4 +210,29 @@ public class MainActivity extends Activity
 		d.setContentView(R.layout.help_dialog);
 		d.show();
 	}
+	
+	class Task extends AsyncTask<String, String, String>{
+
+		@Override
+		protected String doInBackground(String... params) {
+			Comm c = new Comm();
+			Log.d("AsyncTask", "Param0->" + params[0] + "; Param1->" + params[1]);
+			
+			File f = new File(params[0]);
+			return c.sendFile(f, params[1]);
+		}
+		
+		@Override
+		protected void onPostExecute(String result){
+			super.onPostExecute(result);
+			Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+		}		
+		
+		@Override
+		protected void onCancelled(){
+			super.onCancelled();
+			Log.i("AsyncTask", "Cancelled");
+		}
+	}
+	
 }

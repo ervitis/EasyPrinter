@@ -62,7 +62,8 @@ public class Comm{
 				bufferedReader.close();
 				client.close();
 				
-				return result;
+				//returns the printer and the ip
+				return result + ";" + ip;
 			}catch(Exception ex){
 				Log.e("sendMessage", ex.getMessage());
 				return "no-data";
@@ -74,12 +75,15 @@ public class Comm{
 	}	
 	
 	synchronized
-	public int sendFile(File file, String ip){
+	public String sendFile(File file, String ip){
 		Socket client = new Socket();
 		BufferedReader bufferedReader;
 		BufferedInputStream bufferedInputStream;
+		PrintWriter outputStream;
 		String result;
 		int n;
+		boolean getFile = false;
+		CRC32 crc32;
 		
 		try{
 			InetAddress address = InetAddress.getByName(ip);
@@ -87,36 +91,65 @@ public class Comm{
 			client.connect(socketAddress, TIMEOUT);
 		}catch(Exception ex){
 			Log.e("sendFile", ex.getMessage());
-			return 1;
+			return "no-ip";
 		}
 		
 		try{
+			outputStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())), true);
 			bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(client.getOutputStream());
 			
 			bufferedInputStream = new BufferedInputStream(new FileInputStream(file));
 			byte[] buffer = new byte[8192];
 			
-			do{
-				objectOutputStream.writeObject(file);
-				//objectOutputStream.flush();
-			} while ( (n = bufferedInputStream.read(buffer)) != -1 );
-			
+			//send the file name and wait for confirmation
+			outputStream.flush();
+			String temp = file.getName().toString();
+			temp = temp + "#" + temp.length() + "#" + file.length();
+			outputStream.println(temp);
+			outputStream.flush();
 			objectOutputStream.flush();
-			
-			//read the server response it will be bytes
+			result = "";
 			result = bufferedReader.readLine();
-			Log.d("sendFile", result);
 			
-			objectOutputStream.close();
-			bufferedReader.close();
-			client.close();
+			//sends the file
+			n = 0;
+			while ( n < file.length() ){
+				n += bufferedInputStream.read(buffer);
+				
+				//calculates the CRC
+				//problem, send it in another line
+				crc32 = new CRC32();
+				crc32.update(buffer);
+				long crc32value = crc32.getValue();
+				
+				objectOutputStream.write(buffer, 0, n);
+				getFile = true;
+				objectOutputStream.flush();
+			}
 			
-			return 0;
-			
+			if ( n == -1 && !getFile ){
+				throw new Exception("File with no size");
+			}
+			else{
+				objectOutputStream.flush();
+
+				//read the server response
+				result = bufferedReader.readLine();
+				
+				//here is the crc code, when it receives CORRECT from the server
+				
+				Log.d("sendFile", result);
+
+				objectOutputStream.close();
+				bufferedReader.close();
+				client.close();
+
+				return "sended";
+			}			
 		}catch(Exception ex){
 			Log.e("sendFile", ex.getMessage());
-			return 2;
+			return ex.getMessage();
 		}
 	}
 }

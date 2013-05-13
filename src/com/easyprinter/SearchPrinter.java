@@ -47,6 +47,10 @@ public class SearchPrinter extends Activity {
 		TextView tx = (TextView) findViewById(R.id.text_ip_address);
 		try{
 			String ip = tx.getText().toString();
+			//set the ip
+			TextView txt = (TextView) findViewById(R.id.ip_address);
+			txt.setText(ip);
+			
 			Task t = new Task();
 			t.execute(message, ip);	
 			
@@ -74,7 +78,7 @@ public class SearchPrinter extends Activity {
 			
 			Log.i("AsyncTask", result);
 			Intent data = new Intent();
-			data.putExtra("printer", result);
+			data.putExtra("printerandip", result);
 			setResult(Activity.RESULT_OK, data);
 			finish();
 		}		
