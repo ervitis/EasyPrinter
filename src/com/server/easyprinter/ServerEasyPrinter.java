@@ -6,8 +6,10 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -126,6 +128,10 @@ class doComms implements Runnable{
 					while ( n < fileSize ){
 						n += bis.read(buffer);
 					}
+					//bis.close();
+					
+					bos.write(buffer, 0, fileSize);//write into the file
+					bos.flush();
 					
 					//conversion
 					String t = new String(buffer, "UTF-8");
@@ -133,21 +139,38 @@ class doComms implements Runnable{
 					System.out.println("Filesize: " + fileSize + ", n: " + n + ", c: " + c);
 					t = t.substring(c);
 					buffer = t.getBytes("utf-8");
-						
-					bos.write(buffer, 0, n);
-					bos.flush();
 					
+					System.out.println("File received");
 					out.println("CORRECT");
 					out.flush();
 					
+					//wait for crc code
+					String rc = in.readLine();
+					
 					//here is where i should check the crc code
+					try{
+						File f = new File(fileName);
+						System.out.println(f.getName());
+						String re = CheckSum.getMD5CheckSum(f);
+						System.out.println("rc - " + rc);
+						System.out.println("re - " + re);
 
-					File r = new File(fileName);
-					System.out.println("Received " + r.length());
-
-					bos.flush();
-					bis.close();
-					bos.close();
+						if ( rc.equals(re) ){
+							out.println("CORRECT");
+							out.flush();
+							File r = new File(fileName);
+							System.out.println("Received " + r.length());
+							bos.close();
+						}		
+						else{
+							out.println("CRC CORRUPTED");
+							out.flush();
+							System.out.println("CRC corrupted");
+							f.delete();
+						}
+					}catch(Exception ex){
+						System.err.println(ex.getMessage());
+					}
 				}
 				else{
 					System.out.println("Archivo no soportado");
@@ -159,6 +182,7 @@ class doComms implements Runnable{
 			out.flush();
 			out.close();
 			in.close();
+			bis.close();
 			server.close();
 		}catch(IOException ex){
 			System.err.println(ex.getMessage());
