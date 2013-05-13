@@ -112,41 +112,57 @@ public class Comm{
 			result = "";
 			result = bufferedReader.readLine();
 			
-			//sends the file
-			n = 0;
-			while ( n < file.length() ){
-				n += bufferedInputStream.read(buffer);
-				
-				//calculates the CRC
-				//problem, send it in another line
-				crc32 = new CRC32();
-				crc32.update(buffer);
-				long crc32value = crc32.getValue();
-				
-				objectOutputStream.write(buffer, 0, n);
-				getFile = true;
-				objectOutputStream.flush();
-			}
+			Log.d("SendFile->fileName", result);
+			if ( result.equals("CORRECT") ){
 			
-			if ( n == -1 && !getFile ){
-				throw new Exception("File with no size");
+				//sends the file
+				n = 0;
+				while ( n < file.length() ){
+					n += bufferedInputStream.read(buffer);
+
+					objectOutputStream.write(buffer, 0, n);
+					getFile = true;
+					objectOutputStream.flush();
+				}
+
+				if ( n == -1 && !getFile ){
+					throw new Exception("File with no size");
+				}
+				else{
+					objectOutputStream.flush();
+
+					//read the server response
+					result = bufferedReader.readLine();
+					Log.d("sendFile->", result);
+					
+					//calculates the CRC
+					result = CheckSum.getMD5CheckSum(file);
+					outputStream.println(result);
+					outputStream.flush();
+					
+					//wait for crc correct
+					result = bufferedReader.readLine();
+					objectOutputStream.close();
+					
+					if ( result.equals("CORRECT") ){
+						Log.d("sendFile", result);
+						bufferedReader.close();
+						client.close();
+						return "sended";
+					}
+					else{
+						bufferedReader.close();
+						client.close();
+						return "crc-corrupted";
+					}
+				}			
 			}
 			else{
-				objectOutputStream.flush();
-
-				//read the server response
-				result = bufferedReader.readLine();
-				
-				//here is the crc code, when it receives CORRECT from the server
-				
-				Log.d("sendFile", result);
-
-				objectOutputStream.close();
 				bufferedReader.close();
 				client.close();
-
-				return "sended";
-			}			
+				return "no-response";
+			}
+			
 		}catch(Exception ex){
 			Log.e("sendFile", ex.getMessage());
 			return ex.getMessage();
