@@ -75,11 +75,7 @@ public class ServerEasyPrinter {
 		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JDialog jDialog = new JDialog();
-			jDialog.setTitle("Servicio arrancado");
-			jDialog.setModal(true);
-			jDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
-			jDialog.setVisible(true);
+			JOptionPane.showConfirmDialog(null, "Servicio arrancado");
 			
 			Daemon daemon = new Daemon(maxConnections, PORT);
 			Thread thread = new Thread(daemon);
