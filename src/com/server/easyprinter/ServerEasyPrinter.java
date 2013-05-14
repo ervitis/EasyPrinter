@@ -12,10 +12,18 @@ import java.util.zip.CRC32;
 import javax.print.*;
 import javax.swing.*;
 
+/**
+ * Main class
+ * @author victor
+ */
 public class ServerEasyPrinter {
 	private static final int PORT = 5001;
 	private static final int maxConnections = 0;
 		
+	/**
+	 * Main for the program
+	 * @param args	parameter
+	 */
 	public static void main(String[] args) {
 		buildGUI();
 	}
