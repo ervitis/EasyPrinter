@@ -7,26 +7,20 @@ import java.awt.Graphics2D;
 import java.awt.font.LineBreakMeasurer;
 import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
+import java.awt.print.*;
+import java.io.*;
 import java.text.AttributedCharacterIterator;
-import javax.print.Doc;
-import javax.print.DocFlavor;
-import javax.print.DocPrintJob;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-import javax.print.SimpleDoc;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.*;
+import javax.print.attribute.*;
 
 public class Printer implements Printable{
 	
+	/**
+	 * Read file and print it if it can't
+	 * @param fileName	name of file
+	 * @return					<code>string</code> which has the data or error data
+	 * @throws					Exception if it can't send the file to print or return the correct data
+	 */
 	public String readFromFile(String fileName){
 		String data = "";
 		long n = 0;
@@ -84,6 +78,9 @@ public class Printer implements Printable{
 		}
 	}
 	
+	/**
+	 * Print the document
+	 */
 	public void printToPrinter(){
 		PrinterJob printerJob = PrinterJob.getPrinterJob();
 		
@@ -102,6 +99,14 @@ public class Printer implements Printable{
 		}
 	}
 	
+	/**
+	 * Set up the page attributes
+	 * @param graphics		the graphics
+	 * @param pageFormat	format page
+	 * @param pageIndex		number page
+	 * @return						Printable.PAGE_EXISTS
+	 * @throws PrinterException 
+	 */
 	@Override
 	public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
 		Graphics2D graphics2d = (Graphics2D) graphics;

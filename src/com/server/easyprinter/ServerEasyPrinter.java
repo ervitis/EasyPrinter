@@ -9,16 +9,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.AttributedString;
 import java.util.zip.CRC32;
-import javax.print.PrintService;
-import javax.print.PrintServiceLookup;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.print.*;
+import javax.swing.*;
 
 public class ServerEasyPrinter {
 	private static final int PORT = 5001;
@@ -28,6 +20,9 @@ public class ServerEasyPrinter {
 		buildGUI();
 	}
 	
+	/**
+	 * Build the Graphic User Interface
+	 */
 	public static void buildGUI(){
 		JFrame jFrame = new JFrame("EasyPrinter service");
 		
@@ -69,18 +64,38 @@ public class ServerEasyPrinter {
 		jFrame.setVisible(true);
 	}
 
+	/**
+	 * Class for start the daemon implementing ActionListener interface
+	 */
 	private static class StartService implements ActionListener {
 
+		/**
+		 * Action for clicking the button
+		 * @param e		mouse event
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			JDialog jDialog = new JDialog();
+			jDialog.setTitle("Servicio arrancado");
+			jDialog.setModal(true);
+			jDialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+			jDialog.setVisible(true);
+			
 			Daemon daemon = new Daemon(maxConnections, PORT);
 			Thread thread = new Thread(daemon);
 			thread.start();
 		}
 	}
 	
+	/**
+	 * Class for the print button event implementing an actionlistener interface
+	 */
 	private static class PrintJob implements ActionListener{
 
+		/**
+		 * Button click event
+		 * @param e			the mouse event
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Printer printer = new Printer();
@@ -107,15 +122,29 @@ public class ServerEasyPrinter {
 	}
 }
 
+/**
+ * Daemon class for receiving the socket petitions extending Thread super and implementing Runnable interface
+ * @author victor
+ */
 class Daemon extends Thread implements Runnable{
 	private int max, port;
 
+	/**
+	 * Constructor for the daemon
+	 * @param max			max connections, default 0
+	 * @param port		port for listening the daemon
+	 */
 	Daemon(int max, int port){
 		this.max = max;
 		this.port = port;
 	}
 
+	/**
+	 * Thread run method
+	 * @throws IOException for socket error
+	 */
 	@Override
+	synchronized
 	public void run(){
 		int i = 0;
 
@@ -136,14 +165,25 @@ class Daemon extends Thread implements Runnable{
 	}
 }
 
+/**
+ * Class for communications extending the Thread super class and implementing the Runnable interface
+ * @author victor
+ */
 class doComms extends Thread implements Runnable{
 	private Socket server;
 	private String line, input, output;
 
+	/**
+	 * Constructor for the class
+	 * @param server	socket
+	 */
 	doComms(Socket server){
 		this.server = server;
 	}
 
+	/**
+	 * thread run method
+	 */
 	@Override
 	public void run() {
 		input = "";
