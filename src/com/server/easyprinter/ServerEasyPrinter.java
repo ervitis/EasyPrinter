@@ -75,7 +75,7 @@ public class ServerEasyPrinter {
 		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			JOptionPane.showConfirmDialog(null, "Servicio arrancado");
+			JOptionPane.showMessageDialog(null, "Servicio arrancado");
 			
 			Daemon daemon = new Daemon(maxConnections, PORT);
 			Thread thread = new Thread(daemon);
