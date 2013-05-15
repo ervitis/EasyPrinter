@@ -2,19 +2,8 @@
 package com.easyprinter;
 
 import android.util.Log;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
+import java.io.*;
+import java.net.*;
 import java.util.zip.CRC32;
 
 public class Comm{
@@ -23,54 +12,48 @@ public class Comm{
 	
 	synchronized
 	public String sendMessage(String input, String ip){
+		String result = "";
+		Socket client = new Socket();
+		PrintWriter outputStream;
+		BufferedReader bufferedReader;
+		byte[] buffer = new byte[1024];
+		long crc32value;
+			
 		try{
-			String result = "";
-			Socket client = new Socket();
-			PrintWriter outputStream;
-			BufferedReader bufferedReader;
-			byte[] buffer = new byte[1024];
-			long crc32value;
+			InetAddress address = InetAddress.getByName(ip);
+			SocketAddress socketAddress = new InetSocketAddress(address, PORT);
+			client.connect(socketAddress, TIMEOUT);
 			
-			try{
-				InetAddress address = InetAddress.getByName(ip);
-				SocketAddress socketAddress = new InetSocketAddress(address, PORT);
-				client.connect(socketAddress, TIMEOUT);
-			} catch(Exception ex){
-				Log.e("sendMessage", ex.getMessage());
-				return "no-socket";
-			}
-			
-			try{
-				outputStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())), true);
-				bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			outputStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())), true);
+			bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 		
-				Log.d("sendMessage->Sending", "Sending...");
+			//Log.d("sendMessage->Sending", "Sending...");
+			
+			CRC32 crc32 = new CRC32();
+			buffer = input.getBytes("utf-8");
+			crc32.update(buffer);
+			crc32value = crc32.getValue();
 				
-				CRC32 crc32 = new CRC32();
-				buffer = input.getBytes("utf-8");
-				crc32.update(buffer);
-				crc32value = crc32.getValue();
+			outputStream.println(input + ";" + crc32value);
+			outputStream.flush();
 				
-				outputStream.println(input + ";" + crc32value);
-				outputStream.flush();
+			//Log.d("sendMessage->Preparing", "Preparing...");
+			result = bufferedReader.readLine();
+			//Log.d("sendMessage->Receiving", result);
 				
-				Log.d("sendMessage->Preparing", "Preparing...");
-				result = bufferedReader.readLine();
-				Log.d("sendMessage->Receiving", result);
+			outputStream.close();
+			bufferedReader.close();
+			client.close();
 				
-				outputStream.close();
-				bufferedReader.close();
-				client.close();
-				
-				//returns the printer and the ip
-				return result + ";" + ip;
-			}catch(Exception ex){
-				Log.e("sendMessage", ex.getMessage());
-				return "no-data";
-			}
-		}catch(Exception ex){
-			Log.e("Comm->sendMessage", ex.getMessage());
-			return "no-data";
+			//returns the printer and the ip
+			return result + ";" + ip;
+			
+		} catch(IllegalArgumentException ex){
+			Log.e("sendMessage", ex.getMessage());
+			return "socket-invalid-timeout";
+		} catch(IOException ex){
+			Log.e("sendMessage", ex.getMessage());
+			return "error-connection";
 		}
 	}	
 	
@@ -83,18 +66,12 @@ public class Comm{
 		String result;
 		int n;
 		boolean getFile = false;
-		CRC32 crc32;
 		
 		try{
 			InetAddress address = InetAddress.getByName(ip);
 			SocketAddress socketAddress = new InetSocketAddress(address, PORT);
 			client.connect(socketAddress, TIMEOUT);
-		}catch(Exception ex){
-			Log.e("sendFile", ex.getMessage());
-			return "no-ip";
-		}
-		
-		try{
+			
 			outputStream = new PrintWriter(new BufferedWriter(new OutputStreamWriter(client.getOutputStream())), true);
 			bufferedReader = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			ObjectOutputStream objectOutputStream = new ObjectOutputStream(client.getOutputStream());
@@ -113,8 +90,7 @@ public class Comm{
 			result = bufferedReader.readLine();
 			
 			Log.d("SendFile->fileName", result);
-			if ( result.equals("CORRECT") ){
-			
+			if ( result.equals("CORRECT") ){	
 				//sends the file
 				n = 0;
 				while ( n < file.length() ){
@@ -133,7 +109,7 @@ public class Comm{
 
 					//read the server response
 					result = bufferedReader.readLine();
-					Log.d("sendFile->", result);
+					//Log.d("sendFile->", result);
 					
 					//calculates the CRC
 					result = CheckSum.getMD5CheckSum(file);
@@ -145,7 +121,7 @@ public class Comm{
 					objectOutputStream.close();
 					
 					if ( result.equals("CORRECT") ){
-						Log.d("sendFile", result);
+						//Log.d("sendFile", result);
 						bufferedReader.close();
 						client.close();
 						return "sended";
@@ -163,9 +139,15 @@ public class Comm{
 				return "no-response";
 			}
 			
-		}catch(Exception ex){
-			Log.e("sendFile", ex.getMessage());
-			return ex.getMessage();
+		} catch(IllegalArgumentException ex){
+			Log.e("sendMessage", ex.getMessage());
+			return "socket-invalid-timeout";
+		} catch(IOException ex){
+			Log.e("sendMessage", ex.getMessage());
+			return "error-connection";
+		} catch (Exception ex) {
+			Log.e("sendMessage", ex.getMessage());
+			return "error-MD5";
 		}
 	}
 }

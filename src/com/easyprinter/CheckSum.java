@@ -2,9 +2,7 @@
 package com.easyprinter;
 
 import android.util.Log;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.security.MessageDigest;
 
 public class CheckSum {

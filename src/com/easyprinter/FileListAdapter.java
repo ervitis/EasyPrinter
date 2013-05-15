@@ -1,11 +1,8 @@
 
 package com.easyprinter;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
+import android.view.*;
+import android.widget.*;
 import java.util.ArrayList;
 
 public class FileListAdapter extends BaseAdapter{
@@ -63,6 +60,10 @@ public class FileListAdapter extends BaseAdapter{
 		return convertView;
 	}
 	
+	/**
+	 * Add a new element to the arraylist
+	 * @param filelist	the object element
+	 */
 	public void add(FileList filelist){
 		lista.add(filelist);
 	}

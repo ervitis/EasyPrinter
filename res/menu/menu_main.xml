@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-  <item android:id="@+id/print" android:title="@string/txt_print_document"/>
-  <item android:id="@+id/exit" android:title="@string/txt_exit"/>
-	<item android:id="@+id/settings" android:title="@string/txt_settings"/>
-	<item android:id="@+id/help" android:title="@string/txt_menu_help"/>
+  <item android:id="@+id/print" android:title="@string/txt_print_document" android:icon="@drawable/ic_menu_print"/>
+  <item android:id="@+id/exit" android:title="@string/txt_exit" android:icon="@drawable/ic_menu_exit"/>
+	<item android:id="@+id/settings" android:title="@string/txt_settings" android:icon="@drawable/ic_menu_search"/>
+	<item android:id="@+id/help" android:title="@string/txt_menu_help" android:icon="@drawable/ic_menu_help"/>
 </menu>

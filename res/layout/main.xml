@@ -14,7 +14,8 @@
 		android:textSize="20sp"
 		android:gravity="center_horizontal"
 		android:clickable="true"
-		android:onClick="onShowSearch"/>
+		android:onClick="onShowSearch"
+		android:layout_margin="10dp"/>
 	
 	<TextView
 		android:id="@+id/file_name"

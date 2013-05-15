@@ -1,19 +1,14 @@
 
 package com.easyprinter;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.Intent;
+import android.app.*;
+import android.content.*;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
-import android.widget.TextView;
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.*;
 
 /**
  *
@@ -36,12 +31,12 @@ public class SearchFile extends Activity {
 		listView = (ListView) findViewById(R.id.list_files);
 		filelistadapter = new FileListAdapter();
 		
-		final ProgressDialog progressdialog = ProgressDialog.show(this, "Cargando", "Espere un momento...", true);
+		final ProgressDialog progressdialog = ProgressDialog.show(this, "Loading", null, true);
 		new Thread(new Runnable(){
 			@Override
 			public void run(){
 				try{
-					Thread.sleep(3000);
+					Thread.sleep(1500);
 					progressdialog.dismiss();
 				}catch(InterruptedException ex){
 					Log.e("Thread", ex.getMessage());

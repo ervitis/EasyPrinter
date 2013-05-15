@@ -1,21 +1,14 @@
 package com.easyprinter;
 
-import android.app.Activity;
-import android.app.Dialog;
+import android.app.*;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.Bundle;
+import android.os.*;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.view.*;
+import android.widget.*;
 import java.io.File;
 
-public class MainActivity extends Activity
-{
+public class MainActivity extends Activity{
 	private static final int REQUEST_MENU_CODE = 1;
 	private static final int REQUEST_SEARCH_FILE = 2;
 	private static boolean bGetPrinter = false;
