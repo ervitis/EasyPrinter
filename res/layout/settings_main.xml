@@ -6,7 +6,7 @@
   >
 	
 	<TextView
-		android:text="Introduzca la dirección IP"
+		android:text="@string/txt_lbl_ip"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginTop="10dp"
@@ -43,14 +43,14 @@
 		
 		<Button
 			android:id="@+id/cancel_settings"
-			android:text="Cancelar"
+			android:text="@string/cancel_ip"
 			android:layout_height="wrap_content"
 			android:layout_width="wrap_content"
 			android:onClick="onCancelSettings"/>
 		
 		<Button
 			android:id="@+id/search_settings"
-			android:text="Buscar"
+			android:text="@string/search_ip"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:onClick="onSearchPrinter"/>

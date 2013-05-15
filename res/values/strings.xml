@@ -3,11 +3,14 @@
     <string name="app_name">Easy Print</string>
 		<string name="txt_print_document">Imprimir</string>
 		<string name="txt_exit">Salir</string>
-		<string name="txt_settings">Preferencias</string>
+		<string name="txt_settings">Buscar impresora</string>
 		<string name="txt_file_to_print">Cargar fichero</string>
 		<string name="txt_menu_help">Ayuda</string>
 		<string name="app_search">Buscar fichero</string>
 		<string name="cancel_search">Cancelar</string>
 		<string name="txt_help_dialog">Cargue un nuevo fichero y mándelo imprimir desde el menú</string>
 		<string name="app_settings">Busque impresora</string>
+		<string name="txt_lbl_ip">Introduzca la dirección IP del equipo conectado a la impresora</string>
+		<string name="cancel_ip">Cancelar</string>
+		<string name="search_ip">Buscar</string>
 </resources>

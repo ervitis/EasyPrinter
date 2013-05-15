@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Easy Print</string>
+		<string name="txt_print_document">Print</string>
+		<string name="txt_exit">Exit</string>
+		<string name="txt_settings">Search printer</string>
+		<string name="txt_file_to_print">Load file</string>
+		<string name="txt_menu_help">Help</string>
+		<string name="app_search">Search file</string>
+		<string name="cancel_search">Cancel</string>
+		<string name="txt_help_dialog">Load a new file and send it to print from the menu</string>
+		<string name="app_settings">Search printer</string>
+		<string name="txt_lbl_ip">Write down the IP address from the PC where is connected the printer</string>
+		<string name="cancel_ip">Cancel</string>
+		<string name="search_ip">Search</string>
+</resources>
