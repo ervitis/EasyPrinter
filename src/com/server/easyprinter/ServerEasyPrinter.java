@@ -42,12 +42,8 @@ public class ServerEasyPrinter {
 		JButton start = new JButton("Arranca");
 		start.addActionListener(new StartService());
 		
-		JButton print = new JButton("Imprimir");
-		print.addActionListener(new PrintJob());
-		
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(start);
-		box.add(print);
 		
 		JLabel impresora = new JLabel("Impresora");
 		Global.txtImpresora = new JTextField(20);
@@ -89,40 +85,6 @@ public class ServerEasyPrinter {
 			Thread thread = new Thread(daemon);
 			thread.start();
 		}
-	}
-	
-	/**
-	 * Class for the print button event implementing an actionlistener interface
-	 */
-	private static class PrintJob implements ActionListener{
-
-		/**
-		 * Button click event
-		 * @param e			the mouse event
-		 */
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			Printer printer = new Printer();
-			
-			if ( Global.documento.endsWith(".txt") ){
-				String data = printer.readFromFile(Global.documento);
-
-				if ( !data.contentEquals("error") ){
-					Global.myStyledText = new AttributedString(data);
-
-					printer.printToPrinter();
-				}
-				else
-				{
-					System.err.println("Error al imprimir");
-				}
-			}
-			else{
-				String data = printer.readFromFile(Global.documento);
-				System.out.println(data);
-			}
-		}
-		
 	}
 }
 
@@ -305,6 +267,9 @@ class doComms extends Thread implements Runnable{
 							//set the names
 							Global.txtDocumento.setText(Global.documento);
 							Global.txtImpresora.setText(Global.impresora);
+							
+							Printer printer = new Printer();
+							System.out.println(printer.printFile(Global.documento));	
 						}		
 						else{
 							out.println("CRC CORRUPTED");

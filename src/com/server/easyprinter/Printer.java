@@ -10,8 +10,11 @@ import java.awt.geom.Point2D;
 import java.awt.print.*;
 import java.io.*;
 import java.text.AttributedCharacterIterator;
+import java.text.AttributedString;
 import javax.print.*;
 import javax.print.attribute.*;
+import javax.print.event.PrintJobAdapter;
+import javax.print.event.PrintJobEvent;
 
 public class Printer implements Printable{
 	
@@ -21,9 +24,8 @@ public class Printer implements Printable{
 	 * @return					<code>string</code> which has the data or error data
 	 * @throws					Exception if it can't send the file to print or return the correct data
 	 */
-	public String readFromFile(String fileName){
+	public String printFile(String fileName){
 		String data = "";
-		long n = 0;
 		
 		if ( fileName.endsWith(".txt") ){
 			try{
@@ -31,16 +33,29 @@ public class Printer implements Printable{
 				String line = "";
 
 				while ( (line = bufferedReader.readLine()) != null ){
-					data += line + "\n";
+					data += line + "\r\n";
+					System.out.print(data);
 				}
-
-				return data;
+				
+				Global.myStyledText = new AttributedString(data);
+				
+				PrinterJob printerJob = PrinterJob.getPrinterJob();
+				Book book = new Book();
+				book.append(new Printer(), new PageFormat());
+				printerJob.setPageable(book);
+				printerJob.print();
+				
+				return "print";
+			}catch(IOException ex){
+				System.err.println(ex.getMessage());
+				return "no-file";
 			}catch(Exception ex){
 				System.err.println(ex.getMessage());
 				return "error";
 			}
 		}
 		else{
+		
 			try{
 				FileInputStream fileInputStream = new FileInputStream(fileName);
 				
@@ -79,27 +94,6 @@ public class Printer implements Printable{
 	}
 	
 	/**
-	 * Print the document
-	 */
-	public void printToPrinter(){
-		PrinterJob printerJob = PrinterJob.getPrinterJob();
-		
-		Book book = new Book();
-		
-		book.append(new Printer(), new PageFormat());
-		printerJob.setPageable(book);
-		
-		boolean doPrint = printerJob.printDialog();
-		if ( doPrint ){
-			try{
-				printerJob.print();
-			}catch(Exception ex){
-				System.err.println(ex.getMessage());
-			}
-		}
-	}
-	
-	/**
 	 * Set up the page attributes
 	 * @param graphics		the graphics
 	 * @param pageFormat	format page
@@ -129,5 +123,4 @@ public class Printer implements Printable{
 		
 		return Printable.PAGE_EXISTS;
 	}
-	
 }
