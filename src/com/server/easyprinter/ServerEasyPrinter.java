@@ -137,7 +137,7 @@ class Daemon extends Thread implements Runnable{
  */
 class doComms extends Thread implements Runnable{
 	private Socket server;
-	private String line, input, output;
+	private String line;
 
 	/**
 	 * Constructor for the class
@@ -152,13 +152,7 @@ class doComms extends Thread implements Runnable{
 	 */
 	@Override
 	public void run() {
-		input = "";
-		output = "";
 		String[] tempcrc = null;
-		CRC32 crc32 = new CRC32();
-		long crc32value;
-		long crc32sendedvalue;
-		byte[] crc_b = new byte[1024];
 		boolean isFile = false;
 		String fileName = "";
 			
@@ -173,29 +167,33 @@ class doComms extends Thread implements Runnable{
 					tempcrc = line.split(";");
 						
 					if ( tempcrc[0].equals("SEARCHING") ){
-						input += line;
-						crc_b = tempcrc[0].getBytes("utf-8");
-						crc32.update(crc_b);
-						crc32value = crc32.getValue();
-
-						crc32sendedvalue = Long.parseLong(tempcrc[1]);
-
-						if ( crc32sendedvalue == crc32value ){
-							//out.println("CONNECTED"); //send to the client
+						out.println("CONNECTED"); //send to the client
+						out.flush();
+							
+						line = in.readLine();
+						if ( line.equals("GET-PRINT") ){
 							//instead of this, send the printer
 							PrintService printService = PrintServiceLookup.lookupDefaultPrintService();
 							String printerName = printService.getName();
 							Global.impresora = printerName;
 							out.println(printerName);
+							out.flush();
+							Global.txtImpresora.setText(Global.impresora);
 
-							System.out.println("CRC fine");
+							System.out.println(printerName);
 						}
 						else{
-							System.err.println("CRC corrupted");
+							out.println("error");
+							out.flush();
 						}
-
-						System.out.println(input);
+					}
+					else if ( tempcrc[0].equals("FIN") ){
+						//close connection
+						System.out.println("Cerrando conexion");
+						out.println("FIN");
 						out.flush();
+						in.close();
+						server.close();
 					}
 				}
 				else{
@@ -218,7 +216,7 @@ class doComms extends Thread implements Runnable{
 				
 				Global.documento = fileName;
 				
-				if ( fileName.endsWith(".txt") || fileName.endsWith(".pdf") ){
+				if ( fileName.endsWith(".txt") ){
 					//sends an answer
 					out.println("CORRECT");
 					out.flush();
@@ -230,55 +228,69 @@ class doComms extends Thread implements Runnable{
 					while ( n < fileSize ){
 						n += bis.read(buffer);
 					}
-					//bis.close();
-
-					bos.write(buffer, 0, fileSize);//write into the file
-					bos.flush();
 
 					//conversion
 					String t = new String(buffer, "UTF-8");
+					
 					int c = Math.abs(n - fileSize);
 					System.out.println("Filesize: " + fileSize + ", n: " + n + ", c: " + c);
-					t = t.substring(c);
-					buffer = t.getBytes("utf-8");
+					t = t.substring(c, fileSize);
+					buffer = t.getBytes();
+					
+					bos.write(buffer, 0, buffer.length);//write into the file
+					bos.flush();
 
 					System.out.println("File received");
 					out.println("CORRECT");
 					out.flush();
 
-					//wait for crc code
-					String rc = in.readLine();
-
-					//here is where i should check the crc code
-					try{
-						File f = new File(fileName);
-						System.out.println(f.getName());
-						String re = CheckSum.getMD5CheckSum(f);
-						System.out.println("rc - " + rc);
-						System.out.println("re - " + re);
-
-						if ( rc.equals(re) ){
-							out.println("CORRECT");
-							out.flush();
-							File r = new File(fileName);
-							System.out.println("Received " + r.length());
-							bos.close();
+					Global.txtDocumento.setText(Global.documento);
 							
-							//set the names
-							Global.txtDocumento.setText(Global.documento);
-							Global.txtImpresora.setText(Global.impresora);
-							
-							Printer printer = new Printer();
-							System.out.println(printer.printFile(Global.documento));	
-						}		
-						else{
-							out.println("CRC CORRUPTED");
-							out.flush();
-							System.out.println("CRC corrupted");
-							f.delete();
-						}
-					}catch(Exception ex){
-						System.err.println(ex.getMessage());
+					Printer printer = new Printer();
+					System.out.println(printer.printFile(Global.documento));
+				}
+				else if ( fileName.endsWith(".pdf") ){
+					out.println("CORRECT");
+					out.flush();
+
+					System.out.println("File name: " + fileName);
+					
+					long sizeTemp = 52428800;  //50MB
+					InputStream inputStream = server.getInputStream();
+					FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+					
+					buffer = new byte[(int)sizeTemp];
+					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+					
+					n = 0;
+					while ( n < fileSize ){
+						n += inputStream.read(buffer);
+					}
+					
+					if ( n > 0 ){
+						bufferedOutputStream.write(buffer, 0, fileSize);
+						bufferedOutputStream.flush();
+
+						System.out.println("File received");
+						out.println("CORRECT");
+						out.flush();
+
+						Global.txtDocumento.setText(Global.documento);
+
+						out.println("CORRECT");
+						out.flush();
+						File r = new File(fileName);
+						System.out.println("Received " + r.length());
+						bufferedOutputStream.close();
+
+						Printer printer = new Printer();
+						String result = printer.printFile(Global.documento);
+						System.out.println(result);
+						out.println(result);
+						out.flush();
+					}
+					else{
+						System.err.println("Fichero nulo");
 					}
 				}
 				else{

@@ -1,6 +1,7 @@
 
 package com.server.easyprinter;
 
+import com.sun.pdfview.PDFFile;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -9,12 +10,12 @@ import java.awt.font.TextLayout;
 import java.awt.geom.Point2D;
 import java.awt.print.*;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import javax.print.*;
 import javax.print.attribute.*;
-import javax.print.event.PrintJobAdapter;
-import javax.print.event.PrintJobEvent;
 
 public class Printer implements Printable{
 	
@@ -57,37 +58,34 @@ public class Printer implements Printable{
 		else{
 		
 			try{
-				FileInputStream fileInputStream = new FileInputStream(fileName);
+				File f = new File(fileName);
+				FileInputStream fileInputStream = new FileInputStream(f);
+				FileChannel fileChannel = fileInputStream.getChannel();
+				//ByteBuffer byteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+				byte[] buffer = new byte[fileInputStream.available()];
+				fileInputStream.read(buffer, 0, fileInputStream.available());
 				
-				DocFlavor docFlavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
-				Doc doc = new SimpleDoc(fileInputStream, docFlavor, null);
-				PrintRequestAttributeSet attributeSet = new HashPrintRequestAttributeSet();
-				PrintService[] printService = PrintServiceLookup.lookupPrintServices(docFlavor, attributeSet);
-				PrintService printer = null;
+				ByteBuffer byteBuffer = ByteBuffer.wrap(buffer);
+				PDFFile pdfFile = new PDFFile(byteBuffer);
+				PDFPrintPage printPage = new PDFPrintPage(pdfFile);
 				
-				for(int i=0;i<printService.length;i++){
-					String svc = printService[i].getName();
-					if ( svc.equals(Global.impresora) ){
-						printer = printService[i];
-						break;
-					}
-				}
+				//Print job
+				PrinterJob printerJob = PrinterJob.getPrinterJob();
+				PageFormat pageFormat = PrinterJob.getPrinterJob().defaultPage();
+				printerJob.setJobName(fileName);
+				Book book = new Book();
+				book.append(printPage, pageFormat, pdfFile.getNumPages());
+				printerJob.setPageable(book);
 				
-				if ( printer != null ){
-					DocPrintJob docPrintJob = printer.createPrintJob();
-					try{
-						docPrintJob.print(doc, attributeSet);
-						return "print";
-					}catch(Exception ex){
-						System.err.println(ex.getMessage());
-						return "error";
-					}
-				}
-				else{
-					return "no-printer";
-				}
+				
+				printerJob.print();
+				return "print";
+			}catch(IOException ex){
+				System.err.println(ex.getMessage());
+				return "error-io";
 			}catch(Exception ex){
 				System.err.println(ex.getMessage());
+				ex.printStackTrace();
 				return "error";
 			}
 		}
