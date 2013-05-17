@@ -82,7 +82,7 @@ public class SearchFile extends Activity {
 	 */
 	public void Search(){
 		try{
-			File f = new File("/mnt/sdcard/download/");
+			File f = new File("/mnt/sdcard/");
 			if ( f.isDirectory() ){
 				File[] docfiles = f.listFiles(new FilenameFilter(){
 					@Override

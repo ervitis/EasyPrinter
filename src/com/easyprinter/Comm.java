@@ -86,21 +86,24 @@ public class Comm{
 			result = bufferedReader.readLine();
 			
 			if ( file.getName().endsWith(".txt") ){
-				byte[] buffer = new byte[8192];
+				byte[] buffer = new byte[2048];
 
 				Log.d("SendFile->fileName", result);
 				if ( result.equals("CORRECT") ){	
 					//sends the file
 					n = 0;
-					while ( n < file.length() ){
-						n += bufferedInputStream.read(buffer);
+					sended = 0;
+					while ( (n = bufferedInputStream.read(buffer)) > -1 ){
+						sended += n;
+						
+						Log.d("Sending txt", "Sent=" + n + "; Total=" + sended);
 						
 						objectOutputStream.write(buffer, 0, n);
-						getFile = true;
 						objectOutputStream.flush();
+						getFile = true;
 					}
 
-					if ( n == -1 && !getFile ){
+					if ( sended <= 0 && !getFile ){
 						throw new Exception("File with no size");
 					}
 					else{
@@ -114,6 +117,11 @@ public class Comm{
 						return "sended";
 					}			
 				}
+				else{
+					bufferedReader.close();
+					client.close();
+					return "no-correct";
+				}
 			}
 			else{
 				byte[] buffer = new byte[2048];
@@ -122,21 +130,20 @@ public class Comm{
 				Log.d("SendFile->fileName", result);
 				if ( result.equals("CORRECT") ){
 					//read the file and send it, a solution
-					n = bufferedInputStream.read(buffer);
-					
-					do{
+										
+					while ( sended < file.length() && (n = bufferedInputStream.read(buffer)) >= 0 ){
 						sended += n;
-						Log.d("Read from file", "Readed=" + n + "; Total=" + sended);
+						//Log.d("Read from file", "Read=" + n + "; Total=" + sended);
 						os.write(buffer, 0, n);
 						os.flush();
-					}while ( (n = bufferedInputStream.read(buffer)) > -1 );
+					}
 					
 					Log.d("SendFile pdf->", "Leidos " + sended);
 
 					if ( sended > 0 ){
 						//wait for server
 						result = bufferedReader.readLine();
-						Log.d("received", result);
+						//Log.d("received", result);
 						
 						bufferedReader.close();
 						client.close();
@@ -155,15 +162,14 @@ public class Comm{
 				}
 			}			
 		}catch(IllegalArgumentException ex){
-			Log.e("sendMessage", ex.getMessage());
+			Log.e("sendFile", ex.getMessage());
 			return "socket-invalid-timeout";
 		}catch(IOException ex){
-			Log.e("sendMessage", ex.getMessage());
+			Log.e("sendFile", ex.getMessage());
 			return "error-connection";
 		}catch (Exception ex) {
-			Log.e("sendMessage", ex.getMessage());
+			Log.e("sendFile", ex.getMessage());
 			return "error";
 		}
-		return "error";
 	}
 }

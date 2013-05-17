@@ -132,6 +132,7 @@ public class MainActivity extends Activity{
 					}catch(ExecutionException ex){
 						Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
 					}
+					
 				}
 				else{
 					Toast.makeText(this, "Debe seleccionar una impresora en el menú Preferencias", Toast.LENGTH_SHORT).show();
