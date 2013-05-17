@@ -7,8 +7,6 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.AttributedString;
-import java.util.zip.CRC32;
 import javax.print.*;
 import javax.swing.*;
 
@@ -203,7 +201,7 @@ class doComms extends Thread implements Runnable{
 			}
 
 			if ( isFile ){
-				byte[] buffer = new byte[8192];
+				byte[] buffer;
 				int n = 0;
 				int sended;
 				
@@ -223,31 +221,34 @@ class doComms extends Thread implements Runnable{
 
 					System.out.println("File name: " + fileName);
 
+					buffer = new byte[2048];
 					BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(fileName));
 
-					while ( n < fileSize ){
-						n += bis.read(buffer);
+					sended = 0;
+					while ( (n = bis.read(buffer)) > -1 ){
+						sended += n;
+						
+						bos.write(buffer);//write into the file
+						bos.flush();
+						
+						if ( n < 2048 ){
+							break;
+						}
 					}
-
-					//conversion
-					String t = new String(buffer, "UTF-8");
 					
-					int c = Math.abs(n - fileSize);
-					System.out.println("Filesize: " + fileSize + ", n: " + n + ", c: " + c);
-					t = t.substring(c, fileSize);
-					buffer = t.getBytes();
-					
-					bos.write(buffer, 0, buffer.length);//write into the file
-					bos.flush();
+					if ( sended > 0 ){
+						System.out.println("File received");
+						out.println("CORRECT");
+						out.flush();
 
-					System.out.println("File received");
-					out.println("CORRECT");
-					out.flush();
+						Global.txtDocumento.setText(Global.documento);
 
-					Global.txtDocumento.setText(Global.documento);
-							
-					Printer printer = new Printer();
-					System.out.println(printer.printFile(Global.documento));
+						Printer printer = new Printer();
+						System.out.println(printer.printFile(Global.documento));
+					}
+					else{
+						System.err.println("Fichero nulo");
+					}
 				}
 				else if ( fileName.endsWith(".pdf") ){
 					out.println("CORRECT");
@@ -261,17 +262,17 @@ class doComms extends Thread implements Runnable{
 					buffer = new byte[2048];
 					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 					
+					System.out.println(fileSize);
+					
 					n = 0;
 					sended = 0;
-					while ( (n = inputStream.read(buffer))  > -1 ){
+					int remaining = fileSize;
+					while ( remaining > 0  && (n = inputStream.read(buffer, 0, Math.min(remaining, buffer.length))) >= 0 ){
 						sended += n;
-						System.out.println("Leidos=" + n + "; Total=" + sended);
-						bufferedOutputStream.write(buffer);
+						//System.out.println("Leidos=" + n + "; Total=" + sended);
+						bufferedOutputStream.write(buffer, 0, n);
 						bufferedOutputStream.flush();
-						
-						if ( n < 2048 ){
-							break;
-						}
+						remaining -= n;
 					}
 					
 					if ( sended > 0 ){
@@ -282,12 +283,12 @@ class doComms extends Thread implements Runnable{
 						out.println("CORRECT");
 						out.flush();
 						File r = new File(fileName);
-						System.out.println("Received " + r.length());
+						//System.out.println("Received " + r.length());
 						bufferedOutputStream.close();
 
 						Printer printer = new Printer();
 						String result = printer.printFile(Global.documento);
-						System.out.println(result);
+						//System.out.println(result);
 						out.println(result);
 						out.flush();
 					}

@@ -83,6 +83,7 @@ public class Printer implements Printable{
 				return "error-io";
 			}catch(Exception ex){
 				System.err.println(ex.getMessage());
+				ex.printStackTrace();
 				return "error";
 			}
 		}
