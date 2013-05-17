@@ -2,7 +2,6 @@
 package com.easyprinter;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.*;
 import android.util.Log;
@@ -53,26 +52,13 @@ public class SearchPrinter extends Activity {
 			TextView txt = (TextView) findViewById(R.id.ip_address);
 			txt.setText(ip);
 			
-			final ProgressDialog progressdialog = ProgressDialog.show(this, "Loading...", null, true);
-			new Thread(new Runnable(){
-				@Override
-				public void run(){
-					try{
-						Thread.sleep(2000);
-						progressdialog.dismiss();
-					}catch(InterruptedException ex){
-						Log.e("Thread", ex.getMessage());
-					}
-				}
-			}).start();
-			
 			Task t = new Task();
 			t.execute(message, ip);
 			r = t.get();
 			
 			if ( r.contains(";") ){
 				message = "FIN";
-				t.execute(message, ip);
+				new Task().execute(message, ip);
 			}
 			else{
 				Toast.makeText(this, "Arranque el servicio en el servidor", Toast.LENGTH_LONG).show();

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.*;
 import android.widget.*;
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends Activity{
 	private static final int REQUEST_MENU_CODE = 1;
@@ -122,6 +123,15 @@ public class MainActivity extends Activity{
 					
 					Task t = new Task();
 					t.execute(myFile, myIp);
+					
+					try{
+						String r = t.get();
+						Log.d("MAINACTIVITY", "Result " + r);
+					}catch(InterruptedException ex){
+						Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+					}catch(ExecutionException ex){
+						Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+					}
 				}
 				else{
 					Toast.makeText(this, "Debe seleccionar una impresora en el menú Preferencias", Toast.LENGTH_SHORT).show();
@@ -156,6 +166,7 @@ public class MainActivity extends Activity{
 				myPrinter = m[0];
 				myIp = m[1];
 				Log.d("MainActivity", myPrinter + ";" + myIp);
+				Toast.makeText(this, myPrinter, Toast.LENGTH_SHORT).show();
 			}
 		}
 		else if ( requestCode == REQUEST_SEARCH_FILE ){
