@@ -14,8 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
-import javax.print.*;
-import javax.print.attribute.*;
 
 public class Printer implements Printable{
 	
@@ -85,14 +83,13 @@ public class Printer implements Printable{
 				return "error-io";
 			}catch(Exception ex){
 				System.err.println(ex.getMessage());
-				ex.printStackTrace();
 				return "error";
 			}
 		}
 	}
 	
 	/**
-	 * Set up the page attributes
+	 * Set up the page attributes for txt file
 	 * @param graphics		the graphics
 	 * @param pageFormat	format page
 	 * @param pageIndex		number page

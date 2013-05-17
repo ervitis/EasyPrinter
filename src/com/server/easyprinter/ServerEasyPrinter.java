@@ -154,8 +154,7 @@ class doComms extends Thread implements Runnable{
 	public void run() {
 		String[] tempcrc = null;
 		boolean isFile = false;
-		String fileName = "";
-			
+		String fileName = "";			
 		
 		try{
 			BufferedReader in = new BufferedReader(new InputStreamReader(server.getInputStream()));
@@ -206,6 +205,7 @@ class doComms extends Thread implements Runnable{
 			if ( isFile ){
 				byte[] buffer = new byte[8192];
 				int n = 0;
+				int sended;
 				
 				//get the file name in line
 				String[] temp;
@@ -255,26 +255,28 @@ class doComms extends Thread implements Runnable{
 
 					System.out.println("File name: " + fileName);
 					
-					long sizeTemp = 52428800;  //50MB
 					InputStream inputStream = server.getInputStream();
 					FileOutputStream fileOutputStream = new FileOutputStream(fileName);
 					
-					buffer = new byte[(int)sizeTemp];
+					buffer = new byte[2048];
 					BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 					
 					n = 0;
-					while ( n < fileSize ){
-						n += inputStream.read(buffer);
+					sended = 0;
+					while ( (n = inputStream.read(buffer))  > -1 ){
+						sended += n;
+						System.out.println("Leidos=" + n + "; Total=" + sended);
+						bufferedOutputStream.write(buffer);
+						bufferedOutputStream.flush();
+						
+						if ( n < 2048 ){
+							break;
+						}
 					}
 					
-					if ( n > 0 ){
-						bufferedOutputStream.write(buffer, 0, fileSize);
-						bufferedOutputStream.flush();
-
+					if ( sended > 0 ){
 						System.out.println("File received");
-						out.println("CORRECT");
-						out.flush();
-
+						
 						Global.txtDocumento.setText(Global.documento);
 
 						out.println("CORRECT");
