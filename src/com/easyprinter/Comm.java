@@ -62,6 +62,7 @@ public class Comm{
 	public String sendFile(File file, String ip){
 		String result;
 		int n;
+		int sended = 0;
 		boolean getFile = false;
 		
 		try{
@@ -114,28 +115,28 @@ public class Comm{
 					}			
 				}
 			}
-			else if ( file.getName().endsWith(".pdf") ){
-				byte[] buffer = new byte[(int)file.length()];
+			else{
+				byte[] buffer = new byte[2048];
+				OutputStream os = client.getOutputStream();
 				
 				Log.d("SendFile->fileName", result);
 				if ( result.equals("CORRECT") ){
 					//read the file and send it, a solution
-					n = 0;
-					while ( n < file.length() ){
-						n += bufferedInputStream.read(buffer);
-					}
+					n = bufferedInputStream.read(buffer);
 					
-					Log.d("SendFile pdf->", "Leidos " + n);
-
-					//a different outputstream
-					//read it
-					if ( n > 0 ){
-						OutputStream os = client.getOutputStream();
-						os.write(buffer);
+					do{
+						sended += n;
+						Log.d("Read from file", "Readed=" + n + "; Total=" + sended);
+						os.write(buffer, 0, n);
 						os.flush();
+					}while ( (n = bufferedInputStream.read(buffer)) > -1 );
 					
+					Log.d("SendFile pdf->", "Leidos " + sended);
+
+					if ( sended > 0 ){
 						//wait for server
 						result = bufferedReader.readLine();
+						Log.d("received", result);
 						
 						bufferedReader.close();
 						client.close();
@@ -152,10 +153,6 @@ public class Comm{
 					client.close();
 					return "no-correct";
 				}
-			}
-			else{
-				client.close();
-				return "no-file";
 			}			
 		}catch(IllegalArgumentException ex){
 			Log.e("sendMessage", ex.getMessage());
